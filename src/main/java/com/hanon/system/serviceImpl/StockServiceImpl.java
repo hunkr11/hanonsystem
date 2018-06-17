@@ -3,6 +3,8 @@ package com.hanon.system.serviceImpl;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -62,17 +64,19 @@ public class StockServiceImpl implements StockService {
 
 			File newFile = new File(storageDirectory + "/" + fileNameNew);
 			String newFileNameWithPath = storageDirectory + "/" + fileNameNew;
-			FileDetails fileDetails = null;
-
+			FileDetails fileDetails = null;		
+			
 			mpf.transferTo(newFile);
+			String newExcelFileName = readStockFileWriteAsExcel(newFileNameWithPath, newFilenameBase);
+			
 			fileDetails = new FileDetails();
 			fileDetails.setName(mpf.getOriginalFilename());
 			fileDetails.setSize(mpf.getSize());
-			fileDetails.setNewFilename(fileNameNew);
+			fileDetails.setNewFilename(newExcelFileName);
 			fileDetails.setType(contentType);
 			fileDetails.setRec_status("A");
 
-			readStockFileWriteAsExcel(newFileNameWithPath, newFilenameBase);
+			
 			// masterMapper.insertFileRepo(fileRepo);
 			// long fileId = fileRepo.getFile_id();
 			// log.info("Uploaded File Id " +fileId);
@@ -92,20 +96,45 @@ public class StockServiceImpl implements StockService {
 		return files;
 	}
 
-	private void readStockFileWriteAsExcel(String filePath, String newFileName) throws Exception {
+	private String readStockFileWriteAsExcel(String filePath, String newFileName) throws Exception {
 
+
+		
+
+		String[] headers = new String[] {"Company", "Part Number", "DESCRIPTION", "PROG","VARIANT", "COMMODITY","LINE Stock","STORE stock","STOCK","CUS PLAN","FIRM","TENTATIVE","Shortage Qty"};
+
+//		Workbook workbook = new HSSFWorkbook();
+//		Sheet sheet = workbook.createSheet("EDR Raw Data");
+
+		
+		
+		
+		
+		
 		FileInputStream file = new FileInputStream(new File(filePath));
 		XSSFWorkbook wb = new XSSFWorkbook(file);
-
+		String newExcelFileName = null;
+		
 		Workbook newWB = new XSSFWorkbook();
-		Sheet newSheet = newWB.createSheet("new sheet");
+		Sheet newSheet = newWB.createSheet("Hanon");
+		
+		
+		
+		int rowCount = 1;
+		
+		 Row nwRow = newSheet.createRow(rowCount);
+			for (int rn=0; rn<headers.length; rn++) {
+				  
+				nwRow.createCell(rn).setCellValue(headers[rn]);
+				}
+			
 		for (int i = 0; i < wb.getNumberOfSheets(); i++) {
 			System.out.println("sheet no : " + (i + 1) + wb.getSheetAt(i).getSheetName());
 			CreationHelper createHelper = wb.getCreationHelper();
 			XSSFSheet sheet = wb.getSheetAt(i);
 
 			// HSSFSheet sheet = wb.getSheetAt(i);
-			int rowCount = 0;
+			
 			int rwCounttest = 0;
 			for (Row myrow : sheet) {
 				rwCounttest = rwCounttest + 1;
@@ -118,7 +147,7 @@ public class StockServiceImpl implements StockService {
 					 * !myrow.getCell(17).getStringCellValue().equals("")) {
 					 */
 					if (null != myrow.getCell(16)) {
-
+						
 						double col16 = myrow.getCell(16).getNumericCellValue();
 
 			//			
@@ -132,36 +161,45 @@ public class StockServiceImpl implements StockService {
 
 						// if ((col17 < 0) || (col18 < 0) || (col16 < 0)) {
 						if ((col16 < 0)) {
-							System.out.println("rowcount:: " + rwCounttest + "    Mycell 16: " + col16);
-							// int rows = sheet.getPhysicalNumberOfRows();
-							// HSSFRow row;
-							// Cell cell;
+							
+						//	Cell cell = myrow.getCell(c);
+						//	Cell newCell = newRow.createCell(c);
+				//		System.out.println("rowcount:: " + rwCounttest + "    Mycell 16: " + col16);
+							Row newRow = newSheet.createRow(++rowCount);
+							
+							newRow.createCell(0).setCellValue(
+									createHelper.createRichTextString(wb.getSheetAt(i).getSheetName()));							
+							newRow.createCell(1).setCellValue(
+									createHelper.createRichTextString(myrow.getCell(2).getStringCellValue()));	
+							newRow.createCell(2).setCellValue(
+									createHelper.createRichTextString(myrow.getCell(3).getStringCellValue()));	
+							newRow.createCell(3).setCellValue(
+									createHelper.createRichTextString(myrow.getCell(4).getStringCellValue()));	
+						/*	newRow.createCell(4).setCellValue(
+									createHelper.createRichTextString(myrow.getCell(5).getStringCellValue()));	
+							newRow.createCell(5).setCellValue(
+									createHelper.createRichTextString(myrow.getCell(6).getStringCellValue()));	*/						
+							newRow.createCell(6).setCellValue(myrow.getCell(9).getNumericCellValue());
+							newRow.createCell(7).setCellValue(myrow.getCell(10).getNumericCellValue());
+							newRow.createCell(8).setCellValue(myrow.getCell(11).getNumericCellValue());
+							newRow.createCell(9).setCellValue(myrow.getCell(12).getNumericCellValue());
+							newRow.createCell(10).setCellValue(myrow.getCell(13).getNumericCellValue());
+							newRow.createCell(11).setCellValue(myrow.getCell(14).getNumericCellValue());
+							newRow.createCell(12).setCellValue(myrow.getCell(15).getNumericCellValue());
+							newRow.createCell(13).setCellValue(myrow.getCell(16).getNumericCellValue());
+							newRow.createCell(14).setCellValue(myrow.getCell(17).getNumericCellValue());
+						
+							/*
 							int cols = 0; // No of columns
 							int tmp = 0;
 
-							// This trick ensures that we get the data properly
-							// even
-							// if it doesn't start from first few rows
-							// for (int rowIndex = 0; rowIndex < 10 || rowIndex
-							// <
-							// rows; i++) {
-							// Row newRow = null;
-							Row newRow = newSheet.createRow(++rowCount);
-							// for (int rowIndex = 0; rowIndex < rows; i++) {
-							//
-							// // row = (HSSFRow) myrow;
-							// System.out.println("myrow rowIndex :: " +
-							// rowIndex);
-							// // System.out.println("row : " + row);
+							
+							
 							if (myrow != null) {
-								tmp = myrow.getPhysicalNumberOfCells();
-								// sheet.getRow(rowIndex).getPhysicalNumberOfCells();
+								tmp = myrow.getPhysicalNumberOfCells();							
 								if (tmp > cols)
 									cols = tmp;
 							}
-
-							// for (int r = 0; r < rows; r++) {
-							// row = (HSSFRow) myrow;
 
 							for (int c = 0; c < cols; c++) {
 								Cell cell = myrow.getCell(c);
@@ -171,95 +209,34 @@ public class StockServiceImpl implements StockService {
 									switch (cell.getCellType()) { // Identify
 																	// CELL
 
-									// type
-									// you need to add more code here
-									// based
-									// on
-									// your requirement /
-									// transformations
 									case Cell.CELL_TYPE_STRING:
-										// Push the data from Excel to
-										// PDF
-										// Cell
+										
 										newRow.createCell(c).setCellValue(
-												createHelper.createRichTextString(cell.getStringCellValue()));
-										// table_cell = new PdfPCell(new
-										// Phrase(cell.getStringCellValue()));
+												createHelper.createRichTextString(cell.getStringCellValue()));										
 										break;
 									case Cell.CELL_TYPE_NUMERIC:
-										// Push the data from Excel to
-										// PDF
-										// Cell
+									
 										newRow.createCell(c).setCellValue(cell.getNumericCellValue());
-										// table_cell = new PdfPCell(new
-										// Phrase(cell.getNumericCellValue()
-										// + ""));
-										// feel free to move the code
-										// below
-										// to suit to
-										// your
-										// needs
-										// my_table.addCell(table_cell);
-										// break;
+										break;
 									case Cell.CELL_TYPE_BLANK:
-										// Push the data from Excel to
-										// PDF
-										// Cell
+										
 										newCell.setCellType(Cell.CELL_TYPE_STRING);
 										cell.setCellType(Cell.CELL_TYPE_STRING);
 
 										newCell.setCellValue(
 												createHelper.createRichTextString(cell.getStringCellValue()));
-										// table_cell = new PdfPCell(new
-										// Phrase(cell.getStringCellValue()));
-										// feel free to move the code
-										// below
-										// to suit to
-										// your
-										// needs
-										// my_table.addCell(table_cell);
-										// break;
+										break;
 									case Cell.CELL_TYPE_FORMULA:
-										// Push the data from Excel to
-										// PDF
-										// Cell
-
 										newCell.setCellType(Cell.CELL_TYPE_STRING);
 										cell.setCellType(Cell.CELL_TYPE_STRING);
 										newCell.setCellValue(
 												createHelper.createRichTextString(cell.getStringCellValue()));
-										// table_cell = new PdfPCell(new
-										// Phrase(cell.getStringCellValue()));
-										// feel free to move the code
-										// below
-										// to suit to
-										// your
-										// needs
-										// my_table.addCell(table_cell);
-										// break;
-
-										// }
-
+										break;
 									}
 								}
 
-								// }
 							}
-
-							//
-							// Workbook workbook = new HSSFWorkbook();
-							// Sheet sheet2k3 = workbook.createSheet();
-
-							// for (Book aBook : listBook) {
-							// Row row = sheet2k3.createRow(++rowCount);
-							// writeBook(aBook, row);
-							// }
-
-							// try (FileOutputStream outputStream = new
-							// FileOutputStream(excelFilePath)) {
-							// workbook.write(outputStream);
-							// }
-
+*/
 						}
 
 						// Finally add the table to PDF document
@@ -271,17 +248,26 @@ public class StockServiceImpl implements StockService {
 
 				// return iText_xls_2_pdf;
 			}
-			System.out.println("sheet no : " + (i + 1) + " || row count : " + rwCounttest);
+		//	System.out.println("sheet no : " + (i + 1) + " || row count : " + rwCounttest);
 
 		}
-
-		FileOutputStream fileOut = new FileOutputStream("C:/upload_files/workbook.xls");
+		
+		Date date = new Date();  
+	    SimpleDateFormat formatter = new SimpleDateFormat("ddMMyyHHmmss");  
+	    String strDate= formatter.format(date);  
+	   
+	    newExcelFileName = "workbook-"+strDate+".xls";
+		FileOutputStream fileOut = new FileOutputStream("C:/upload_files/"+newExcelFileName);
 		newWB.write(fileOut);
 
 		fileOut.close();
 
 		file.close();
-		System.out.println("dkdkd");
+//		System.out.println("Deleting.. "+ filePath);
+		
+		File tempFile = new File(filePath);    	
+		tempFile.delete();
+		return newExcelFileName;
 	}
 
 	private void readStockFile(String filePath, String newFileName) throws Exception {

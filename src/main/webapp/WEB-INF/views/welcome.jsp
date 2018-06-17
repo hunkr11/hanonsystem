@@ -169,12 +169,16 @@
 
 			<nav id="nav">
 				<ul class="gnb depth1">
-					<form method="POST" enctype="multipart/form-data" action="/hanon/uploadStocksFile">
+					<form method="POST" enctype="multipart/form-data"
+						action="/hanon/uploadStocksFile">
 						<div class="row">
-						<input
+							<!-- <input
 								type="submit" value="Upload Stocks"
-								class="btn btn-primary pull-right" />
-							<input type="file" name="file" class="pull-right" /> 
+								class="btn btn-primary pull-right" /> -->
+							<!-- <input type="button" value="Upload Stocks"
+								class="btn btn-primary pull-right" />  -->
+								<input type="file" id="uploadFile"
+								name="file" class="pull-right" />
 						</div>
 						<!-- <button type="submit"  class="btn btn-primary pull-right">Upload Stocks</button> -->
 					</form>
@@ -246,9 +250,27 @@
 				</article>
 			</section>
 
+			<script type="text/javascript">
+				$("#uploadFile").on("change", function(e) {
+					console.log('on change');
+					var formData = new FormData();
+					formData.append('file', $('#uploadFile')[0].files[0]);
 
-
-
+					$.ajax({
+						url : '/hanon/uploadStocksFile',
+						type : 'POST',
+						data : formData,
+						processData : false, // tell jQuery not to process the data
+						contentType : false, // tell jQuery not to set contentType
+						success : function(data) {
+							location. reload(true);
+							console.log(data.files[0].newFilename);
+							 window.location.href='/hanon/folder/'+data.files[0].newFilename;
+						//	alert(data);
+						}
+					});
+				});
+			</script>
 
 			<script type="text/javascript"
 				src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
