@@ -100,13 +100,15 @@ public class StockServiceImpl implements StockService {
 		Workbook newWB = new XSSFWorkbook();
 		Sheet newSheet = newWB.createSheet("new sheet");
 		for (int i = 0; i < wb.getNumberOfSheets(); i++) {
-			System.out.println("sheet no : " + (i + 1));
+			System.out.println("sheet no : " + (i + 1) + wb.getSheetAt(i).getSheetName());
 			CreationHelper createHelper = wb.getCreationHelper();
 			XSSFSheet sheet = wb.getSheetAt(i);
 
 			// HSSFSheet sheet = wb.getSheetAt(i);
 			int rowCount = 0;
+			int rwCounttest = 0;
 			for (Row myrow : sheet) {
+				rwCounttest = rwCounttest + 1;
 				if (myrow.getRowNum() > 9) {
 					// System.out.println("Mycell 17: " +
 					// myrow.getCell(17).getNumericCellValue() + " row num :" +
@@ -115,150 +117,161 @@ public class StockServiceImpl implements StockService {
 					 * if (null != myrow.getCell(17).getStringCellValue() &&
 					 * !myrow.getCell(17).getStringCellValue().equals("")) {
 					 */
-					double row17 = myrow.getCell(17).getNumericCellValue(); // int
-																			// row17
-																			// =
-																			// Integer.parseInt(myrow.getCell(17).getNumericCellValue());
-					double row18 = myrow.getCell(18).getNumericCellValue();
-					double row19 = myrow.getCell(19).getNumericCellValue();
-					// System.out.println("Mycell 17: " + row17);
-					// System.out.println("Mycell 18: " + row18);
-					// System.out.println("Mycell 19: " + row19);
-					if ((row17 < 0) || (row18 < 0) || (row19 < 0)) {
+					if (null != myrow.getCell(16)) {
 
-						// int rows = sheet.getPhysicalNumberOfRows();
-						// HSSFRow row;
-						// Cell cell;
-						int cols = 0; // No of columns
-						int tmp = 0;
+						double col16 = myrow.getCell(16).getNumericCellValue();
 
-						// This trick ensures that we get the data properly even
-						// if it doesn't start from first few rows
-						// for (int rowIndex = 0; rowIndex < 10 || rowIndex <
-						// rows; i++) {
-						// Row newRow = null;
-						Row newRow = newSheet.createRow(++rowCount);
-						// for (int rowIndex = 0; rowIndex < rows; i++) {
-						//
-						// // row = (HSSFRow) myrow;
-						// System.out.println("myrow rowIndex :: " + rowIndex);
-						// // System.out.println("row : " + row);
-						if (myrow != null) {
-							tmp = myrow.getPhysicalNumberOfCells();
-							// sheet.getRow(rowIndex).getPhysicalNumberOfCells();
-							if (tmp > cols)
-								cols = tmp;
-						}
+			//			
+						/*
+						 * double col17 =
+						 * myrow.getCell(17).getNumericCellValue();
+						 * System.out.println("Mycell 17: " + col17); double
+						 * col18 = myrow.getCell(18).getNumericCellValue();
+						 * System.out.println("Mycell 18: " + col18);
+						 */
 
-						// for (int r = 0; r < rows; r++) {
-						// row = (HSSFRow) myrow;
+						// if ((col17 < 0) || (col18 < 0) || (col16 < 0)) {
+						if ((col16 < 0)) {
+							System.out.println("rowcount:: " + rwCounttest + "    Mycell 16: " + col16);
+							// int rows = sheet.getPhysicalNumberOfRows();
+							// HSSFRow row;
+							// Cell cell;
+							int cols = 0; // No of columns
+							int tmp = 0;
 
-						for (int c = 0; c < cols; c++) {
-							Cell cell = myrow.getCell(c);
-							if (cell != null) {
-								Cell newCell = newRow.createCell(c);
-								// Your code here
-								switch (cell.getCellType()) { // Identify
-																// CELL
-
-								// type
-								// you need to add more code here
-								// based
-								// on
-								// your requirement /
-								// transformations
-								case Cell.CELL_TYPE_STRING:
-									// Push the data from Excel to
-									// PDF
-									// Cell
-									newRow.createCell(c)
-											.setCellValue(createHelper.createRichTextString(cell.getStringCellValue()));
-									// table_cell = new PdfPCell(new
-									// Phrase(cell.getStringCellValue()));
-									break;
-								case Cell.CELL_TYPE_NUMERIC:
-									// Push the data from Excel to
-									// PDF
-									// Cell
-									newRow.createCell(c).setCellValue(cell.getNumericCellValue());
-									// table_cell = new PdfPCell(new
-									// Phrase(cell.getNumericCellValue()
-									// + ""));
-									// feel free to move the code
-									// below
-									// to suit to
-									// your
-									// needs
-									// my_table.addCell(table_cell);
-									// break;
-								case Cell.CELL_TYPE_BLANK:
-									// Push the data from Excel to
-									// PDF
-									// Cell
-									newCell.setCellType(Cell.CELL_TYPE_STRING);
-									cell.setCellType(Cell.CELL_TYPE_STRING);
-
-									newCell.setCellValue(createHelper.createRichTextString(cell.getStringCellValue()));
-									// table_cell = new PdfPCell(new
-									// Phrase(cell.getStringCellValue()));
-									// feel free to move the code
-									// below
-									// to suit to
-									// your
-									// needs
-									// my_table.addCell(table_cell);
-									// break;
-								case Cell.CELL_TYPE_FORMULA:
-									// Push the data from Excel to
-									// PDF
-									// Cell
-
-									newCell.setCellType(Cell.CELL_TYPE_STRING);
-									cell.setCellType(Cell.CELL_TYPE_STRING);
-									newCell.setCellValue(createHelper.createRichTextString(cell.getStringCellValue()));
-									// table_cell = new PdfPCell(new
-									// Phrase(cell.getStringCellValue()));
-									// feel free to move the code
-									// below
-									// to suit to
-									// your
-									// needs
-									// my_table.addCell(table_cell);
-									// break;
-
-									// }
-
-								}
+							// This trick ensures that we get the data properly
+							// even
+							// if it doesn't start from first few rows
+							// for (int rowIndex = 0; rowIndex < 10 || rowIndex
+							// <
+							// rows; i++) {
+							// Row newRow = null;
+							Row newRow = newSheet.createRow(++rowCount);
+							// for (int rowIndex = 0; rowIndex < rows; i++) {
+							//
+							// // row = (HSSFRow) myrow;
+							// System.out.println("myrow rowIndex :: " +
+							// rowIndex);
+							// // System.out.println("row : " + row);
+							if (myrow != null) {
+								tmp = myrow.getPhysicalNumberOfCells();
+								// sheet.getRow(rowIndex).getPhysicalNumberOfCells();
+								if (tmp > cols)
+									cols = tmp;
 							}
 
+							// for (int r = 0; r < rows; r++) {
+							// row = (HSSFRow) myrow;
+
+							for (int c = 0; c < cols; c++) {
+								Cell cell = myrow.getCell(c);
+								if (cell != null) {
+									Cell newCell = newRow.createCell(c);
+									// Your code here
+									switch (cell.getCellType()) { // Identify
+																	// CELL
+
+									// type
+									// you need to add more code here
+									// based
+									// on
+									// your requirement /
+									// transformations
+									case Cell.CELL_TYPE_STRING:
+										// Push the data from Excel to
+										// PDF
+										// Cell
+										newRow.createCell(c).setCellValue(
+												createHelper.createRichTextString(cell.getStringCellValue()));
+										// table_cell = new PdfPCell(new
+										// Phrase(cell.getStringCellValue()));
+										break;
+									case Cell.CELL_TYPE_NUMERIC:
+										// Push the data from Excel to
+										// PDF
+										// Cell
+										newRow.createCell(c).setCellValue(cell.getNumericCellValue());
+										// table_cell = new PdfPCell(new
+										// Phrase(cell.getNumericCellValue()
+										// + ""));
+										// feel free to move the code
+										// below
+										// to suit to
+										// your
+										// needs
+										// my_table.addCell(table_cell);
+										// break;
+									case Cell.CELL_TYPE_BLANK:
+										// Push the data from Excel to
+										// PDF
+										// Cell
+										newCell.setCellType(Cell.CELL_TYPE_STRING);
+										cell.setCellType(Cell.CELL_TYPE_STRING);
+
+										newCell.setCellValue(
+												createHelper.createRichTextString(cell.getStringCellValue()));
+										// table_cell = new PdfPCell(new
+										// Phrase(cell.getStringCellValue()));
+										// feel free to move the code
+										// below
+										// to suit to
+										// your
+										// needs
+										// my_table.addCell(table_cell);
+										// break;
+									case Cell.CELL_TYPE_FORMULA:
+										// Push the data from Excel to
+										// PDF
+										// Cell
+
+										newCell.setCellType(Cell.CELL_TYPE_STRING);
+										cell.setCellType(Cell.CELL_TYPE_STRING);
+										newCell.setCellValue(
+												createHelper.createRichTextString(cell.getStringCellValue()));
+										// table_cell = new PdfPCell(new
+										// Phrase(cell.getStringCellValue()));
+										// feel free to move the code
+										// below
+										// to suit to
+										// your
+										// needs
+										// my_table.addCell(table_cell);
+										// break;
+
+										// }
+
+									}
+								}
+
+								// }
+							}
+
+							//
+							// Workbook workbook = new HSSFWorkbook();
+							// Sheet sheet2k3 = workbook.createSheet();
+
+							// for (Book aBook : listBook) {
+							// Row row = sheet2k3.createRow(++rowCount);
+							// writeBook(aBook, row);
 							// }
+
+							// try (FileOutputStream outputStream = new
+							// FileOutputStream(excelFilePath)) {
+							// workbook.write(outputStream);
+							// }
+
 						}
 
-						//
-						// Workbook workbook = new HSSFWorkbook();
-						// Sheet sheet2k3 = workbook.createSheet();
-
-						// for (Book aBook : listBook) {
-						// Row row = sheet2k3.createRow(++rowCount);
-						// writeBook(aBook, row);
-						// }
-
-						// try (FileOutputStream outputStream = new
-						// FileOutputStream(excelFilePath)) {
-						// workbook.write(outputStream);
-						// }
-
+						// Finally add the table to PDF document
+						// iText_xls_2_pdf.add(my_table);
 					}
-
-					// Finally add the table to PDF document
-					// iText_xls_2_pdf.add(my_table);
-
 				}
 				// iText_xls_2_pdf.close();
 				// we created our pdf file..
 
 				// return iText_xls_2_pdf;
 			}
+			System.out.println("sheet no : " + (i + 1) + " || row count : " + rwCounttest);
 
 		}
 
